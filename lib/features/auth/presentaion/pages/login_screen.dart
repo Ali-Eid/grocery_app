@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:grocery_app/core/themes/colors/colors.dart';
 import 'package:grocery_app/features/auth/presentaion/bloc/login_bloc/login_bloc.dart';
 import 'package:grocery_app/features/auth/presentaion/pages/auth_screen.dart';
-import 'package:grocery_app/features/auth/presentaion/pages/otp_screen.dart';
 import 'package:grocery_app/features/auth/presentaion/pages/reset_password_screen.dart';
 import 'package:grocery_app/features/auth/presentaion/pages/signup_screen.dart';
 import 'package:grocery_app/features/home/presentation/pages/home_screen.dart';
@@ -30,17 +29,12 @@ class _LoginScreenState extends State<LoginScreen> {
           child: BlocConsumer(
             bloc: context.read<LoginBloc>(),
             listener: (context, state) {
-              if (state is SuccessLoginByGoogleState) {
+              if (state is SuccessLoginState) {
                 Navigator.of(context).pushAndRemoveUntil(
                     CupertinoPageRoute(
                       builder: (context) => const HomeScreen(),
                     ),
                     (route) => false);
-              }
-              if (state is SuccessAuthLoginState) {
-                Navigator.of(context).push(CupertinoPageRoute(
-                    builder: (context) =>
-                        OTPScreen(phone: _phoneController.text)));
               }
             },
             builder: (context, state) {
@@ -82,21 +76,24 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: _phoneController,
                           hint: 'Mobile No',
                         ),
-                        // SizedBox(height: 28.h),
-                        // AuthTextFieldWidget(
-                        //   controller: _passController,
-                        //   hint: 'Password',
-                        //   isPassword: true,
-                        // ),
+                        SizedBox(height: 28.h),
+                        AuthTextFieldWidget(
+                          controller: _passController,
+                          hint: 'Password',
+                          isPassword: true,
+                        ),
                         SizedBox(height: 28.h),
                         SizedBox(
                           height: 56.h,
                           width: double.infinity,
                           child: ButtonWidget(
                             onPress: () async {
-                              context
-                                  .read<LoginBloc>()
-                                  .add(LoginPhoneEvent(_phoneController.text));
+                              context.read<LoginBloc>().add(LoginPhoneEvent(
+                                  phoneNumber: _phoneController.text,
+                                  password: _passController.text));
+                              // context
+                              //     .read<LoginBloc>()
+                              //     .add(LoginPhoneEvent(_phoneController.text));
                               // Navigator.of(context).push(CupertinoPageRoute(
                               //     builder: (context) =>
                               //         OTPScreen(phone: _phoneController.text)));
@@ -147,9 +144,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: double.infinity,
                               child: ButtonWidget(
                                 onPress: () {
-                                  context
-                                      .read<LoginBloc>()
-                                      .add(LoginByGoogleEvent());
+                                  // context
+                                  //     .read<LoginBloc>()
+                                  //     .add(LoginByGoogleEvent());
                                 },
                                 backgroundColor: ColorManager.darkPrimary,
                                 shape: MaterialStateProperty.all(

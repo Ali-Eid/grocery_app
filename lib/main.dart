@@ -12,6 +12,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await di.init();
+  // token = di.sl<SharedPreferences>().getString('token') ?? '';
   runApp(const MyApp());
 }
 

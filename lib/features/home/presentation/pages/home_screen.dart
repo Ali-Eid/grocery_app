@@ -4,8 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:grocery_app/core/themes/colors/colors.dart';
 import 'package:grocery_app/features/cart/presentation/pages/cart_screen.dart';
+import 'package:grocery_app/features/categories/presentaions/pages/categories.dart';
 import 'package:grocery_app/features/home/presentation/bloc/enable_location/enable_location_bloc.dart';
 import 'package:grocery_app/features/home/presentation/pages/enable_location_screen.dart';
+import 'package:grocery_app/features/home/presentation/widgets/product_details_widget.dart';
 import 'package:grocery_app/injection_container.dart' as di;
 
 class HomeScreen extends StatefulWidget {
@@ -275,7 +277,7 @@ class HomeWidget extends StatelessWidget {
                             InkWell(
                               onTap: () {
                                 Navigator.of(context).push(CupertinoPageRoute(
-                                  builder: (context) => CartScreen(),
+                                  builder: (context) => const CartScreen(),
                                 ));
                               },
                               child: Container(
@@ -466,9 +468,7 @@ class CategoryWidget extends StatelessWidget {
                       showModalBottomSheet(
                         context: context,
                         builder: (context) {
-                          return Container(
-                            height: MediaQuery.of(context).size.height * 0.90,
-                          );
+                          return const CategoriesScreen();
                         },
                       );
                       // Navigator.of(context).push(CupertinoPageRoute(builder: (context) => const CategoriesScreen(),));
@@ -595,96 +595,109 @@ class ProductItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 105.w,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14.r),
-        color: ColorManager.white,
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
-              child: Stack(
-                alignment: AlignmentDirectional.topEnd,
-                children: [
-                  Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 8.h, horizontal: 8.w),
-                    decoration: BoxDecoration(
-                      color: ColorManager.backgroundImgColor,
-                      borderRadius: BorderRadius.circular(14.r),
-                    ),
-                    child: const Image(
-                        image: AssetImage('assets/images/product.png')),
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 7.w, vertical: 7.h),
-                    child: Container(
-                      width: 18.w,
-                      height: 18.h,
-                      alignment: Alignment.center,
+    return InkWell(
+      onTap: () {
+        showModalBottomSheet(
+          isScrollControlled: true,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+          context: context,
+          builder: (context) => SizedBox(
+              height: MediaQuery.of(context).size.height * 0.50,
+              child: const ProductDetailsWidget()),
+        );
+      },
+      child: Container(
+        width: 105.w,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14.r),
+          color: ColorManager.white,
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
+                child: Stack(
+                  alignment: AlignmentDirectional.topEnd,
+                  children: [
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8.h, horizontal: 8.w),
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: ColorManager.white),
-                      child: Icon(
-                        Icons.add,
-                        size: 18.sp,
-                        color: ColorManager.primary,
+                        color: ColorManager.backgroundImgColor,
+                        borderRadius: BorderRadius.circular(14.r),
                       ),
+                      child: const Image(
+                          image: AssetImage('assets/images/product.png')),
                     ),
-                  )
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 7.w, vertical: 7.h),
+                      child: Container(
+                        width: 18.w,
+                        height: 18.h,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle, color: ColorManager.white),
+                        child: Icon(
+                          Icons.add,
+                          size: 18.sp,
+                          color: ColorManager.primary,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 5.h),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Lorem ipsum',
+                    style: TextStyle(
+                        fontSize: 7.sp, color: ColorManager.textTitleColor),
+                  ),
+                  Text(
+                    '400 g',
+                    style: TextStyle(
+                        fontSize: 6.sp, color: ColorManager.textColor),
+                  ),
+                  SizedBox(height: 4.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '\$ 4.75 ',
+                        style: TextStyle(
+                            fontSize: 10.sp, color: ColorManager.primary),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            '4.9',
+                            style: TextStyle(
+                                fontSize: 8.sp, color: ColorManager.textColor),
+                          ),
+                          Icon(
+                            Icons.star,
+                            color: ColorManager.starsColor,
+                            size: 8.sp,
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
-          ),
-          SizedBox(height: 5.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Lorem ipsum',
-                  style: TextStyle(
-                      fontSize: 7.sp, color: ColorManager.textTitleColor),
-                ),
-                Text(
-                  '400 g',
-                  style:
-                      TextStyle(fontSize: 6.sp, color: ColorManager.textColor),
-                ),
-                SizedBox(height: 4.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '\$ 4.75 ',
-                      style: TextStyle(
-                          fontSize: 10.sp, color: ColorManager.primary),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          '4.9',
-                          style: TextStyle(
-                              fontSize: 8.sp, color: ColorManager.textColor),
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: ColorManager.starsColor,
-                          size: 8.sp,
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 9.h),
-        ],
+            SizedBox(height: 9.h),
+          ],
+        ),
       ),
     );
   }

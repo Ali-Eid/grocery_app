@@ -11,14 +11,9 @@ class LoginInitial extends LoginState {}
 
 class LoadingLoginState extends LoginState {}
 
-class SuccessAuthLoginState extends LoginState {
-  final String verfyId;
-
-  const SuccessAuthLoginState(this.verfyId);
-}
-
 class SuccessLoginState extends LoginState {
-  final UserCredential user;
+  // final UserCredential user;
+  final UserEntity user;
 
   const SuccessLoginState(this.user);
 }
@@ -29,8 +24,16 @@ class ErrorLoginState extends LoginState {
   const ErrorLoginState(this.message);
 }
 
-class SuccessLoginByGoogleState extends LoginState {
-  final UserCredential userCredential;
+class SuccessSignUpState extends LoginState {
+  // final UserCredential user;
+  final UserEntity user;
 
-  const SuccessLoginByGoogleState(this.userCredential);
+  const SuccessSignUpState(this.user);
 }
+
+
+// class SuccessLoginByGoogleState extends LoginState {
+//   final UserCredential userCredential;
+
+//   const SuccessLoginByGoogleState(this.userCredential);
+// }

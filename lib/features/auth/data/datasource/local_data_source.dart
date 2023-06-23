@@ -17,7 +17,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<String> getToken() async {
     if (sharedPreferences.getString('token') != null) {
-      return sharedPreferences.getString('token')!;
+      return sharedPreferences.getString('token') ?? '';
     } else {
       return 'null';
     }

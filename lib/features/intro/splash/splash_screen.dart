@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:grocery_app/features/home/presentation/pages/home_screen.dart';
 import 'package:grocery_app/features/intro/onBoarding/on_boarding_screen.dart';
 import 'package:grocery_app/features/intro/splash/bloc/app_bloc_bloc.dart';
 
@@ -34,8 +33,11 @@ class _SplashScreenState extends State<SplashScreen> {
         listener: (context, state) {
           if (state is HomeAppBlocState) {
             Timer(const Duration(seconds: 2), () {
-              Navigator.of(context).pushReplacement(
-                  CupertinoPageRoute(builder: (context) => const HomeScreen()));
+              Navigator.of(context).pushReplacement(CupertinoPageRoute(
+                  builder: (context) => const OnBoardingScreen()));
+
+              // Navigator.of(context).pushReplacement(
+              //     CupertinoPageRoute(builder: (context) => const HomeScreen()));
             });
           } else {
             Navigator.of(context).pushReplacement(CupertinoPageRoute(

@@ -1,44 +1,46 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'dart:convert';
+
+import 'package:grocery_app/core/constants.dart';
 import 'package:grocery_app/core/error/exciption.dart';
-import 'package:grocery_app/core/global/constants.dart';
+import 'package:grocery_app/features/auth/data/model/auth_model.dart';
+import 'package:grocery_app/injection_container.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<String> signInPhone(String phoneNumber);
-  Future<UserCredential> otpVerify(String verfyId, String otpVerfy);
-  Future<UserCredential> SignInbyGoogle();
+  Future<AuthModel> login(String mobile, String password);
+  Future<AuthModel> signUp(String mobile, String password, String name);
+  Future<VerifyModel> otpVerfiy(String otp);
 }
 
+Map<String, String>? headers = {
+  "Accept": "application/json",
+  "Content-Type": "application/json",
+  "version": "1.0.0",
+  "Authorization": 'Bearer ${sl<SharedPreferences>().getString('token')}',
+};
+
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final FirebaseAuth firebaseAuth;
-  final FirebaseFirestore firestore;
+  final http.Client client;
 
-  AuthRemoteDataSourceImpl(this.firebaseAuth, this.firestore);
+  AuthRemoteDataSourceImpl(this.client);
   @override
-  Future<String> signInPhone(String phoneNumber) async {
-    // String verification = '';
+  Future<AuthModel> login(String mobile, String password) async {
     try {
-      await firebaseAuth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: (phoneAuthCredential) async {
-          otpVerify(phoneAuthCredential.verificationId ?? '',
-              phoneAuthCredential.smsCode ?? '');
-          // await firebaseAuth.signInWithCredential(phoneAuthCredential);
-        },
-        verificationFailed: (error) {
-          if (error.code == 'invalid-phone-number') {
-            throw PhoneNumberWrongException();
-          } else {
-            throw ServerException();
-          }
-        },
-        codeSent: (verificationId, forceResendingToken) async {
-          veficationId = verificationId;
-        },
-        codeAutoRetrievalTimeout: (verificationId) {},
-      );
-      return veficationId;
+      final response = await client.post(Uri.parse(baseUrl + EndPoints.login),
+          headers: headers,
+          body: json.encode({
+            'mobile': mobile,
+            'password': password,
+          }));
+      if (response.statusCode == 200) {
+        final jsondecode = json.decode(response.body) as Map<String, dynamic>;
+        print(jsondecode);
+        final AuthModel model = AuthModel.fromJson(jsondecode);
+        return model;
+      } else {
+        throw ServerException();
+      }
     } catch (e) {
       print(e.toString());
       throw ServerException();
@@ -46,19 +48,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserCredential> otpVerify(String verfyId, String otpVerfy) async {
+  Future<AuthModel> signUp(String mobile, String password, String name) async {
     try {
-      final response = await firebaseAuth.signInWithCredential(
-          PhoneAuthProvider.credential(
-              verificationId: verfyId, smsCode: otpVerfy));
-      CollectionReference collectionReference =
-          FirebaseFirestore.instance.collection('users');
-      collectionReference.doc(response.user!.uid).set({
-        'uid': response.user!.uid,
-        'name': response.user!.displayName,
-        'phone': response.user!.phoneNumber,
-      });
-      return response;
+      final response =
+          await client.post(Uri.parse(baseUrl + EndPoints.register),
+              headers: headers,
+              body: json.encode({
+                'mobile': mobile,
+                'password': password,
+                'name': name,
+              }));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print(response.body);
+        final jsondecode = json.decode(response.body) as Map<String, dynamic>;
+        final AuthModel model = AuthModel.fromJson(jsondecode);
+        return model;
+      } else {
+        throw ServerException();
+      }
     } catch (e) {
       print(e.toString());
       throw ServerException();
@@ -66,30 +73,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserCredential> SignInbyGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
-
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-
-    UserCredential usercredential =
-        await firebaseAuth.signInWithCredential(credential);
-    CollectionReference collectionReference =
-        FirebaseFirestore.instance.collection('users');
-    collectionReference.doc(usercredential.user!.uid).set({
-      'uid': usercredential.user!.uid,
-      'name': usercredential.user!.displayName,
-      'email': usercredential.user!.email,
-    });
-
-    // Once signed in, return the UserCredential
-    return usercredential;
+  Future<VerifyModel> otpVerfiy(String otp) async {
+    try {
+      final response = await client.post(
+          Uri.parse(baseUrl + EndPoints.otpVerify),
+          headers: headers,
+          body: json.encode({"otp": otp}));
+      print(response.body);
+      print(response.headers);
+      print(response.request?.headers ?? '');
+      if (response.statusCode == 200) {
+        final jsondecode = json.decode(response.body) as Map<String, dynamic>;
+        print(jsondecode);
+        final VerifyModel model = VerifyModel.fromJson(jsondecode);
+        return model;
+      } else {
+        throw ServerException();
+      }
+    } catch (e) {
+      print(e.toString());
+      throw ServerException();
+    }
   }
 }

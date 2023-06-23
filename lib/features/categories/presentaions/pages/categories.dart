@@ -12,22 +12,28 @@ class CategoriesScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        leading: InkWell(
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: Row(
-            children: [
-              Icon(
-                Icons.arrow_back_ios_new_outlined,
-                color: ColorManager.primary,
-                size: 14.sp,
-              ),
-              Text(
-                'Back',
-                style: TextStyle(fontSize: 14.sp, color: ColorManager.primary),
-              )
-            ],
+        leading: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          alignment: Alignment.center,
+          // color: Colors.red,
+          child: InkWell(
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+            child: Row(
+              children: [
+                Icon(
+                  Icons.arrow_back_ios_new_outlined,
+                  color: ColorManager.primary,
+                  size: 14.sp,
+                ),
+                Text(
+                  'Back',
+                  style:
+                      TextStyle(fontSize: 14.sp, color: ColorManager.primary),
+                )
+              ],
+            ),
           ),
         ),
         title: Text(
@@ -43,8 +49,11 @@ class CategoriesScreen extends StatelessWidget {
           Expanded(
             child: GridView.builder(
               itemCount: 9,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                // crossAxisSpacing: 11.w,
+                mainAxisSpacing: 30.h,
+              ),
               itemBuilder: (context, index) => Column(
                 children: [
                   Container(
@@ -74,7 +83,7 @@ class CategoriesScreen extends StatelessWidget {
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );
